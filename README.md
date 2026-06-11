@@ -56,7 +56,7 @@ uv run fastmcp run hello_mcp.py
 ### Development (SSE/HTTP transport)
 
 ```bash
-uv run fastmcp dev hello_mcp.py
+uv run fastmcp dev inspector hello_mcp.py
 ```
 
 </br>
