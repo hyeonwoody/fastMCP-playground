@@ -10,11 +10,6 @@
 
 </br>
 
-## 🖥️: API Documentation
-[Swagger UI](https://hyeonwoody.com/swagger/?urls.primaryName=fastMCP)
-
-</br>
-
 ## 🧱: Structure
 
 ```
@@ -47,16 +42,22 @@ uv sync
 
 ```bash
 # MCP 서버 실행 (stdio transport)
-uv run python hello_mcp.py
+uv run python -m app.main
+
+# LangServe 실행
+uv run python -m app.lang_serve
+
+# 스크립트 엔트리 포인트 설치
+uv sync && uv run server
 
 # 또는 fastmcp CLI 사용
-uv run fastmcp run hello_mcp.py
+uv run fastmcp run app/main.py
 ```
 
 ### Development (SSE/HTTP transport)
 
 ```bash
-uv run fastmcp dev inspector hello_mcp.py
+uv run fastmcp dev inspector app/main.py
 ```
 
 </br>
