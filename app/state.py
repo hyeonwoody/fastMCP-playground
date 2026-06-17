@@ -17,12 +17,18 @@ def get_vector_store() -> VectorStorePort:
 
 
 def get_llm() -> LlmPort:
-    backend = os.environ.get("LLM", "mistral")
-    if backend == "openai":
+    llm = os.environ.get("LLM", "mistral")
+    if llm == "openai":
         from services.llm.openAI import OpenAI
         return OpenAI()
-    from services.llm.mistral import Mistral
-    return Mistral()
+    if llm == "mistral":
+        from services.llm.mistral import Mistral
+        return Mistral()
+    if llm == "qwen":
+        from services.llm.qwen import Qwen
+        return Qwen()
+    from services.llm.eeve import Eeve
+    return Eeve()
 
 
 vector_store: VectorStorePort = get_vector_store()
