@@ -15,9 +15,15 @@ def get_vector_store() -> VectorStorePort:
     from services.store.qdrant import QdrantVectorStore
     return QdrantVectorStore()
 
+
 def get_llm() -> LlmPort:
-    from services.llm.openAI import OpenAI
-    return OpenAI()
+    backend = os.environ.get("LLM", "mistral")
+    if backend == "openai":
+        from services.llm.openAI import OpenAI
+        return OpenAI()
+    from services.llm.mistral import Mistral
+    return Mistral()
+
 
 vector_store: VectorStorePort = get_vector_store()
 llm: LlmPort = get_llm()
