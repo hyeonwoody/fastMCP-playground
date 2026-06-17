@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import tools.greet
+import tools.ask
 from app.state import mcp
 
 
