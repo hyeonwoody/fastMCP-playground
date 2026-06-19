@@ -1,10 +1,18 @@
 """model configs / local models"""
 import os
+from pathlib import Path
+
 from fastmcp import FastMCP
+from fastapi import FastAPI
 from services.port import VectorStorePort
 from services.port import LlmPort
 
 mcp = FastMCP("Hello MCP")
+api = FastAPI(title="Synapster LangServe")
+
+from langchain_core.prompts import ChatPromptTemplate
+_PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "rag_prompt.txt"
+_prompt = ChatPromptTemplate.from_template(_PROMPT_PATH.read_text())
 
 
 def get_vector_store() -> VectorStorePort:
