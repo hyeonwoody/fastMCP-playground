@@ -1,31 +1,50 @@
-"""Core application logic"""
-import os
-import sys
-from pathlib import Path
+from __future__ import annotations
+
+from contextlib import asynccontextmanager
+import structlog
 import uvicorn
+from fastapi import FastAPI
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from dotenv import load_dotenv
-load_dotenv()
+from app.state import mcp, ports, settings
 
 import tools.greet
 import tools.ask
-import app.lang_serve
-from app.state import mcp
-from app.state import api
 
+logger = structlog.get_logger()
+
+mcp_app = mcp.http_app(path="/")
+
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with mcp_app.lifespan(app):
+        logger.info("starting_synapster", port=settings.port)
+        await ports.store.ensure_collection(settings.qdrant_collection, 1024)
+        yield
+        logger.info("shutting_down_synapster")
+
+
+api = FastAPI(
+    title="Synapster",
+    description="RAG-powered document search and retrieval MCP server",
+    lifespan=lifespan,
+)
+
+api.mount("/mcp", mcp_app)
 
 @api.get("/health")
-def health():
+async def health():
     return {"status": "ok"}
 
 
-def main() -> None:
-    mcp_app = mcp.http_app()
-    mcp_app.mount("/api/v1", api)
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(mcp_app, host="0.0.0.0", port=port)
+def main():
+    uvicorn.run(
+        "app.main:api",
+        host=settings.host,
+        port=settings.port,
+        reload=False,
+    )
 
 
 if __name__ == "__main__":
