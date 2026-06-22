@@ -28,6 +28,18 @@ class DocumentDetail(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+class CacheEntry(BaseModel):
+    query_hash: str
+    response: str
+    similarity: float
+    created_at: datetime
+    ttl: int
+
+class CacheStats(BaseModel):
+    total_entries: int
+    hit_rate: float
+    avg_similarity: float
+
 class RerankResult(BaseModel):
     index: int
     score: float

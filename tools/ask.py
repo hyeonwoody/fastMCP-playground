@@ -25,6 +25,18 @@ async def ask_question(
         else None,
     )
 
+    query_embeddings = await ports.embedding.embed([inp.question])
+    query_emb = query_embeddings[0]
+    cached = await ports.cache.get(
+        query_emb.dense, settings.cache_similarity_threshold
+    )
+    if cached:
+        return {
+            "answer": cached.response,
+            "sources": [],
+            "cached": True,
+        }
+
     filters_dict = inp.filters.model_dump(exclude_none=True) if inp.filters else None
     results = await retrieve(
         query=inp.question,
@@ -43,6 +55,8 @@ async def ask_question(
     )
     
     answer = await ports.llm.generate(inp.question, context)
+
+    await ports.cache.put(query_emb.dense, answer, settings.cache_ttl_seconds)
 
     return {
         "answer": answer,
