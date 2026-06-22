@@ -5,7 +5,6 @@ from datetime import datetime
 from typing import Protocol
 
 from models.domain import (
-
     DocumentDetail,
     DocumentMeta,
     EmbeddingResult,
@@ -49,6 +48,9 @@ class VectorStorePort(Protocol):
 
     async def ensure_collection(self, collection: str, dense_dim: int) -> None: ...
 
+    async def delete_by_project(self, collection: str, project_id: int) -> int: ...
+
+
 class RerankerPort(Protocol):
     async def rerank(
         self, query: str, documents: list[str], top_k: int
@@ -60,3 +62,9 @@ class LLMPort(Protocol):
     async def stream(
         self, prompt: str, context: str, **kwargs
     ) -> AsyncIterator[str]: ...
+
+
+class ReadmeFetcherPort(Protocol):
+    async def fetch_project_name(self, project_id: int) -> str: ...
+
+    async def fetch_readme(self, project_name: str) -> str: ...

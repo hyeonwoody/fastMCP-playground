@@ -59,3 +59,14 @@ class AskQuestionOutput(BaseModel):
     sources: list[RetrievedChunk]
     session_id: str
     cached: bool
+
+
+class ProjectCreate(BaseModel):
+    name: str = Field(..., max_length=100)
+
+
+class SyncResult(BaseModel):
+    project_id: int
+    project_name: str
+    chunks_processed: int
+    synced_at: str

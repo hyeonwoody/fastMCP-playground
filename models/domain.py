@@ -67,3 +67,9 @@ class SearchHit(BaseModel):
     chunk_id: str
     score: float
     payload: dict
+
+
+class Project(BaseModel):
+    id: int
+    name: str
+    last_synced_at: datetime | None = None

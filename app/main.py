@@ -5,6 +5,7 @@ import structlog
 import uvicorn
 from fastapi import FastAPI
 
+from app.routes.projects import router as projects_router
 from app.state import mcp, ports, settings
 
 import tools.greet
@@ -32,6 +33,8 @@ api = FastAPI(
 )
 
 api.mount("/mcp", mcp_app)
+api.include_router(projects_router)
+
 
 @api.get("/health")
 async def health():

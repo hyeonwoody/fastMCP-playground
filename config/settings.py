@@ -33,3 +33,5 @@ class Settings(BaseSettings):
 
     chunk_size: int = 512
     chunk_overlap: int = 50
+
+    api_base_url: str = "http://localhost:44300"

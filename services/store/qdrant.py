@@ -149,6 +149,35 @@ class QdrantVectorStore:
             )
         return count
 
+    async def delete_by_project(self, collection: str, project_id: int) -> int:
+        result = await self._client.count(
+            collection_name=collection,
+            count_filter=models.Filter(
+                must=[
+                    models.FieldCondition(
+                        key="project_id",
+                        match=models.MatchValue(value=project_id),
+                    )
+                ]
+            ),
+        )
+        count = result.count
+        if count > 0:
+            await self._client.delete(
+                collection_name=collection,
+                points_selector=models.FilterSelector(
+                    filter=models.Filter(
+                        must=[
+                            models.FieldCondition(
+                                key="project_id",
+                                match=models.MatchValue(value=project_id),
+                            )
+                        ]
+                    )
+                ),
+            )
+        return count
+
     async def list_documents(self, collection: str) -> list[DocumentMeta]:
         all_points, _ = await self._client.scroll(
             collection_name=collection,
@@ -233,6 +262,13 @@ class QdrantVectorStore:
 
     def _build_filter(self, filters: dict) -> models.Filter:
         conditions = []
+        if "project_id" in filters and filters["project_id"]:
+            conditions.append(
+                models.FieldCondition(
+                    key="project_id",
+                    match=models.MatchValue(value=filters["project_id"]),
+                )
+            )
         if "project_name" in filters and filters["project_name"]:
             conditions.append(
                 models.FieldCondition(
