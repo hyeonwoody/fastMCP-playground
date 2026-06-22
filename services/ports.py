@@ -9,6 +9,7 @@ from models.domain import (
     DocumentDetail,
     DocumentMeta,
     EmbeddingResult,
+    RerankResult,
     SearchHit,
     VectorPoint,
 )
