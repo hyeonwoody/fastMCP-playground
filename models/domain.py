@@ -28,6 +28,10 @@ class DocumentDetail(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+class RerankResult(BaseModel):
+    index: int
+    score: float
+
 class DocumentMeta(BaseModel):
     document_id: str
     project_name: str

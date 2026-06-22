@@ -3,7 +3,7 @@ from __future__ import annotations
 import structlog
 
 from models.schemas import ChunkMetadata, RetrievedChunk
-from services.ports import EmbeddingPort, VectorStorePort
+from services.ports import EmbeddingPort, RerankerPort, VectorStorePort
 
 logger = structlog.get_logger()
 
@@ -16,7 +16,7 @@ async def retrieve(
     collection: str,
     embedding_port: EmbeddingPort,
     store_port: VectorStorePort,
-   
+    reranker_port: RerankerPort
 ) -> list[RetrievedChunk]:
     embeddings = await embedding_port.embed([query])
     query_emb = embeddings[0]
@@ -39,15 +39,18 @@ async def retrieve(
 
     if not hits:
         return []
+    documents = [h.payload.get("content", "") for h in hits]
+    reranked = await reranker_port.rerank(query, documents, top_k)
 
     results: list[RetrievedChunk] = []
-    for hit in hits:
+    for rr in reranked:
+        hit = hits[rr.index]
         payload = hit.payload
         results.append(
             RetrievedChunk(
                 chunk_id=hit.chunk_id,
                 content=payload.get("content", ""),
-                score=hit.score,
+                score=rr.score,
                 metadata=ChunkMetadata(
                     document_id=payload.get("document_id", ""),
                     project_name=payload.get("project_name", ""),

@@ -48,6 +48,10 @@ class VectorStorePort(Protocol):
 
     async def ensure_collection(self, collection: str, dense_dim: int) -> None: ...
 
+class RerankerPort(Protocol):
+    async def rerank(
+        self, query: str, documents: list[str], top_k: int
+    ) -> list[RerankResult]: ...
 
 class LLMPort(Protocol):
     async def generate(self, prompt: str, context: str, **kwargs) -> str: ...

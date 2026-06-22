@@ -34,6 +34,7 @@ async def ask_question(
         collection=settings.qdrant_collection,
         embedding_port=ports.embedding,
         store_port=ports.store,
+        reranker_port=ports.reranker,
     )
 
     context = "\n\n---\n\n".join(
